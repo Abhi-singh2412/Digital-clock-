@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Clock – IST</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+
+    .clock-container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 48px 64px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .clock-label {
+      font-size: 1rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 16px;
+    }
+
+    .clock-display {
+      font-size: clamp(3rem, 12vw, 7rem);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+      text-shadow: 0 0 20px rgba(120, 180, 255, 0.6),
+                   0 0 60px rgba(80, 120, 255, 0.3);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .clock-display .separator {
+      display: inline-block;
+      animation: blink 1s step-start infinite;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    .timezone-badge {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 6px 20px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      color: #ffffff;
+      font-size: 0.85rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(37, 117, 252, 0.4);
+    }
+
+    .date-display {
+      margin-top: 12px;
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.55);
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="clock-container">
+    <div class="clock-label">Current Time</div>
+    <div class="clock-display">
+      <span id="hours">00</span><span class="separator">:</span><span id="minutes">00</span><span class="separator">:</span><span id="seconds">00</span>
+    </div>
+    <div class="timezone-badge">IST</div>
+    <div class="date-display" id="date-display"></div>
+  </div>
+
+  <script>
+    const MS_PER_MINUTE = 60 * 1000;
+    const IST_OFFSET_MS = 5.5 * 60 * MS_PER_MINUTE; // UTC+5:30
+
+    function updateClock() {
+      // IST is UTC+5:30
+      const now = new Date();
+      const utcMs = now.getTime() + now.getTimezoneOffset() * MS_PER_MINUTE;
+      const istMs = utcMs + IST_OFFSET_MS;
+      const ist = new Date(istMs);
+
+      const h = String(ist.getHours()).padStart(2, '0');
+      const m = String(ist.getMinutes()).padStart(2, '0');
+      const s = String(ist.getSeconds()).padStart(2, '0');
+
+      document.getElementById('hours').textContent = h;
+      document.getElementById('minutes').textContent = m;
+      document.getElementById('seconds').textContent = s;
+
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const dayName = days[ist.getDay()];
+      const date = ist.getDate();
+      const month = months[ist.getMonth()];
+      const year = ist.getFullYear();
+
+      document.getElementById('date-display').textContent =
+        `${dayName}, ${date} ${month} ${year}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
